@@ -1,4 +1,4 @@
-package com.example.bookmarkimdb.ui.home;
+package com.example.bookmarkimdb.ui.search;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,27 +16,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookmarkimdb.R;
-import com.example.bookmarkimdb.ui.AdapterHome;
-import com.example.bookmarkimdb.ui.models.Watched;
+import com.example.bookmarkimdb.ui.AdapterSearch;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class SearchFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    private SearchViewModel searchViewModel;
     private RecyclerView recyclerView;
-    private List<Watched> watchedList;
+    private List<Object> searchList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
-        watchedList = new ArrayList<Watched>();
+        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
 
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        View root = inflater.inflate(R.layout.fragment_search, container, false);
 
-        final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView textView = root.findViewById(R.id.text_gallery);
+        searchViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
@@ -57,9 +54,9 @@ public class HomeFragment extends Fragment {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation()));
 
-        final AdapterHome adapterHome = new AdapterHome(watchedList);
-        recyclerView.setAdapter(adapterHome);
-        adapterHome.notifyDataSetChanged();
+//        final AdapterSearch adapter = new AdapterSearch(searchList);
+//        recyclerView.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
 
         //aqui chamar os detalhes
 //        recyclerView.addOnItemTouchListener(
