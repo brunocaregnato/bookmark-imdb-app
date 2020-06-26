@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.bookmarkimdb.ui.models.MovieDTO;
+
 import java.io.File;
+import java.util.ArrayList;
 
 public class BDSQLite extends SQLiteOpenHelper {
 
@@ -16,9 +19,11 @@ public class BDSQLite extends SQLiteOpenHelper {
 
     private static final String ID = "id";
     private static final String PHOTO_PATH = "photo_path";
-    private static final String LOCATION = "location";
+    private static final String ADDRESS_NAME = "address_name";
+    private static final String ADDRESS_LAT = "address_lat";
+    private static final String ADDRESS_LON = "address_lon";
 
-    private static final String[] COLUMNS = {ID, PHOTO_PATH, LOCATION };
+    private static final String[] COLUMNS = {ID, PHOTO_PATH, ADDRESS_NAME, ADDRESS_LAT, ADDRESS_LON };
 
     public BDSQLite(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,7 +34,9 @@ public class BDSQLite extends SQLiteOpenHelper {
         String CREATE_TABLE = "CREATE TABLE "+ TABLE_MOVIES +" (" +
                 ID + " STRING," +
                 PHOTO_PATH + " TEXT," +
-                LOCATION + " TEXT)";
+                ADDRESS_NAME + " TEXT," +
+                ADDRESS_LAT + " TEXT," +
+                ADDRESS_LON + " TEXT)";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -39,18 +46,20 @@ public class BDSQLite extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-    public void addMovies(Movies movie) {
+    public void addMovies(MovieDTO movie) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ID, movie.getId());
         values.put(PHOTO_PATH, movie.getPhotoPath());
-        values.put(LOCATION, movie.getLocation());
+        values.put(ADDRESS_NAME , movie.getAddressName());
+        values.put(ADDRESS_LAT , movie.getAddressLat());
+        values.put(ADDRESS_LON , movie.getAddressLon());
 
         db.insert(TABLE_MOVIES, null, values);
         db.close();
     }
 
-    public Movies getMovie(String id) {
+    public MovieDTO getMovie(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_MOVIES, // a. tabela
                 COLUMNS, // b. colunas
@@ -69,16 +78,18 @@ public class BDSQLite extends SQLiteOpenHelper {
         }
     }
 
-    private Movies cursorToMovie(Cursor cursor) {
-        Movies movie = new Movies();
+    private MovieDTO cursorToMovie(Cursor cursor) {
+        MovieDTO movie = new MovieDTO();
         movie.setId(cursor.getString(0));
         movie.setPhotoPath(cursor.getString(1));
-        movie.setLocation(cursor.getString(2));
+        movie.setAddressName(cursor.getString(2));
+        movie.setAddressLat(cursor.getString(3));
+        movie.setAddressLon(cursor.getString(4));
         return movie;
     }
 
-    public ArrayList<Movies> getAllMovies() {
-        ArrayList<Movies> moviesList = new ArrayList<Movies>();
+    public ArrayList<MovieDTO> getAllMovies() {
+        ArrayList<MovieDTO> moviesList = new ArrayList<MovieDTO>();
         String query = "SELECT * FROM " + TABLE_MOVIES + " ORDER BY " + ID;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -90,12 +101,14 @@ public class BDSQLite extends SQLiteOpenHelper {
         return moviesList;
     }
 
-    public int updateMovie(Movies movie) {
+    public int updateMovie(MovieDTO movie) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ID, movie.getId());
         values.put(PHOTO_PATH, movie.getPhotoPath());
-        values.put(LOCATION, movie.getLocation());
+        values.put(ADDRESS_NAME, movie.getAddressName());
+        values.put(ADDRESS_LAT, movie.getAddressLat());
+        values.put(ADDRESS_LON, movie.getAddressLon());
 
         int i = db.update(TABLE_MOVIES, //tabela
                 values, // valores
@@ -105,7 +118,7 @@ public class BDSQLite extends SQLiteOpenHelper {
         return i; // número de linhas modificadas
     }
 
-    public int deleteMovie(Movies movie) {
+    public int deleteMovie(MovieDTO movie) {
         SQLiteDatabase db = this.getWritableDatabase();
         File file = new File(movie.getPhotoPath());
         file.delete();
