@@ -98,7 +98,10 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 //        final ApiInterface apiService =
 //                ApiClient.getClient().create(ApiInterface.class);
 //
-//        Call<MoviesResponse> call = apiService.getMovies(API_KEY,"Love",3);
+        // DEPOIS DO USUÁRIO PREENCHER A SEARCHBOX ++ CLICAR NO BOTÃO PESQUISAR,
+        // VAI CHAMAR ESSA FERA AQUI EMBAIXO
+
+//        Call<MoviesResponse> call = apiService.getMovies(API_KEY,<TEXTO DA SEARCH BOX>,3);
 //        call.enqueue(new Callback<MoviesResponse>() {
 //            @Override
 //            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -128,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 //                    });
 //                }
 ////               Log.println(1,"teste",Integer.toString(movies.size()));
+
+//                  // PASSA A LISTA DE FILMES PRO RECYCLERVIEW ATRAVÉS DO ADAPTER
 //                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
 //            }
 //
