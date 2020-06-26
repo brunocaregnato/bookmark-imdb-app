@@ -1,4 +1,4 @@
-package com.example.bookmarkimdb.ui;
+package com.example.bookmarkimdb.ui.utils;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +13,11 @@ import com.example.bookmarkimdb.ui.models.Watched;
 
 import java.util.List;
 
-public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
+public class AdapterSearch extends RecyclerView.Adapter<AdapterSearch.ViewHolder> {
 
     private List<Watched> watchedList;
 
-    public AdapterHome(List<Watched> watchedList) {
+    public AdapterSearch(List<Watched> watchedList) {
         this.watchedList = watchedList;
     }
 
@@ -38,7 +38,7 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
         return watchedList.size();
     }
 
-    //popular as tags da fragment_home aqui
+    //popular as tags da fragment_search aqui
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView historyText;

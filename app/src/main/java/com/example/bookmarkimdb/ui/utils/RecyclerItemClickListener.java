@@ -1,4 +1,4 @@
-package com.example.bookmarkimdb.ui;
+package com.example.bookmarkimdb.ui.utils;
 
 import android.content.Context;
 import android.view.GestureDetector;

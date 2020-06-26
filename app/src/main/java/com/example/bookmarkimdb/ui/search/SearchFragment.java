@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookmarkimdb.R;
-import com.example.bookmarkimdb.ui.AdapterSearch;
 
 import java.util.List;
 
