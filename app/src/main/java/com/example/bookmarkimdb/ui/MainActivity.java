@@ -1,7 +1,9 @@
 package com.example.bookmarkimdb.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -32,9 +34,15 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.google.android.gms.common.api.GoogleApiClient.*;
 
@@ -42,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 
     private AppBarConfiguration mAppBarConfiguration;
     private GoogleApiClient googleApiClient;
+
+    private final static String API_KEY = "e391ba67";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +80,87 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+
+
+        // @TODO NEED TO MERGE MOVIE API
+
+//
+//        if (API_KEY.isEmpty()) {
+//            Toast.makeText(getApplicationContext(), "Please obtain your API KEY from themoviedb.org first!", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//
+//        final ApiInterface apiService =
+//                ApiClient.getClient().create(ApiInterface.class);
+//
+//        Call<MoviesResponse> call = apiService.getMovies(API_KEY,"Love",3);
+//        call.enqueue(new Callback<MoviesResponse>() {
+//            @Override
+//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+//                int statusCode = response.code();
+//                Log.println(1,"teste",Integer.toString(statusCode));
+//                Log.println(1,"url",response.raw().request().url().toString());
+//                List<MovieSearch> movies = response.body().getSearch();
+//                for (MovieSearch movie : movies) {
+//                    Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,movie.getTitle());
+//                    callDetail.enqueue(new Callback<Movie>() {
+//                        @Override
+//                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+//                            int statusCode = response.code();
+//                            Log.i("teste",Integer.toString(statusCode));
+//                            Log.i("url",response.raw().request().url().toString());
+//                            Movie movie = response.body();
+//                            Log.i("Objetao",movie.toString());
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<Movie> call, Throwable t) {
+//                            mostraAlerta("Erro",t.toString());
+//                            // Log error here since request failed
+//                            Log.e(TAG, t.toString());
+//                        }
+//                    });
+//                }
+////               Log.println(1,"teste",Integer.toString(movies.size()));
+//                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+//                mostraAlerta("Erro",t.toString());
+//                // Log error here since request failed
+//                Log.e(TAG, t.toString());
+//            }
+//        });
+//
+////        Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,"Love & Pop");
+////        callDetail.enqueue(new Callback<Movie>() {
+////            @Override
+////            public void onResponse(Call<Movie> call, Response<Movie> response) {
+////                int statusCode = response.code();
+////                Log.i("teste",Integer.toString(statusCode));
+////                Log.i("url",response.raw().request().url().toString());
+////                Movie movie = response.body();
+////                Log.i("Objetao",movie.toString());
+////
+////
+//////               Log.println(1,"teste",Integer.toString(movies.size()));
+//////                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
+////            }
+////
+////            @Override
+////            public void onFailure(Call<Movie> call, Throwable t) {
+////                mostraAlerta("Erro",t.toString());
+////                // Log error here since request failed
+////                Log.e(TAG, t.toString());
+////            }
+////        });
     }
 
 
@@ -146,5 +238,20 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 
     }
 
+
+    private void mostraAlerta(String titulo, String mensagem) {
+        AlertDialog alertDialog = new
+                AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle(titulo);
+        alertDialog.setMessage(mensagem);
+        alertDialog.setButton(AlertDialog. BUTTON_NEUTRAL ,
+                getString(R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 
 }
