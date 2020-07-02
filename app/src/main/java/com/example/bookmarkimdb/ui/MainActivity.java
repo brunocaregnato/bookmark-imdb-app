@@ -1,32 +1,27 @@
 package com.example.bookmarkimdb.ui;
 
-import android.Manifest;
+
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.Menu;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bookmarkimdb.R;
+import com.example.bookmarkimdb.ui.models.Movie;
+import com.example.bookmarkimdb.ui.models.MovieSearch;
+import com.example.bookmarkimdb.ui.models.MoviesResponse;
+import com.example.bookmarkimdb.ui.rest.ApiClient;
+import com.example.bookmarkimdb.ui.rest.ApiInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
-import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -34,8 +29,6 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Locale;
@@ -50,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
 
     private AppBarConfiguration mAppBarConfiguration;
     private GoogleApiClient googleApiClient;
+    private String TAG = "tag: ";
 
     private final static String API_KEY = "e391ba67";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,91 +74,87 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-
-
-
         // @TODO NEED TO MERGE MOVIE API
 
-//
-//        if (API_KEY.isEmpty()) {
-//            Toast.makeText(getApplicationContext(), "Please obtain your API KEY from themoviedb.org first!", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
+        if (API_KEY.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Please obtain your API KEY from themoviedb.org first!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
 //        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.movies_recycler_view);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//
-//        final ApiInterface apiService =
-//                ApiClient.getClient().create(ApiInterface.class);
-//
-        // DEPOIS DO USUÁRIO PREENCHER A SEARCHBOX ++ CLICAR NO BOTÃO PESQUISAR,
-        // VAI CHAMAR ESSA FERA AQUI EMBAIXO
 
-//        Call<MoviesResponse> call = apiService.getMovies(API_KEY,<TEXTO DA SEARCH BOX>,3);
-//        call.enqueue(new Callback<MoviesResponse>() {
-//            @Override
-//            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-//                int statusCode = response.code();
+        final ApiInterface apiService =
+                ApiClient.getClient().create(ApiInterface.class);
+
+//         DEPOIS DO USUÁRIO PREENCHER A SEARCHBOX ++ CLICAR NO BOTÃO PESQUISAR,
+//         VAI CHAMAR ESSA FERA AQUI EMBAIXO
+
+        Call<MoviesResponse> call = apiService.getMovies(API_KEY,"fight club",3);
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                int statusCode = response.code();
 //                Log.println(1,"teste",Integer.toString(statusCode));
 //                Log.println(1,"url",response.raw().request().url().toString());
-//                List<MovieSearch> movies = response.body().getSearch();
-//                for (MovieSearch movie : movies) {
-//                    Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,movie.getTitle());
-//                    callDetail.enqueue(new Callback<Movie>() {
-//                        @Override
-//                        public void onResponse(Call<Movie> call, Response<Movie> response) {
-//                            int statusCode = response.code();
-//                            Log.i("teste",Integer.toString(statusCode));
-//                            Log.i("url",response.raw().request().url().toString());
-//                            Movie movie = response.body();
-//                            Log.i("Objetao",movie.toString());
-//
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<Movie> call, Throwable t) {
-//                            mostraAlerta("Erro",t.toString());
-//                            // Log error here since request failed
-//                            Log.e(TAG, t.toString());
-//                        }
-//                    });
-//                }
-////               Log.println(1,"teste",Integer.toString(movies.size()));
+                List<MovieSearch> movies = response.body().getSearch();
+                for (MovieSearch movie : movies) {
+                    Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,movie.getTitle());
+                    callDetail.enqueue(new Callback<Movie>() {
+                        @Override
+                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+                            int statusCode = response.code();
+                            Log.i("teste",Integer.toString(statusCode));
+                            Log.i("url",response.raw().request().url().toString());
+                            Movie movie = response.body();
+                            Log.i("Objetao",movie.toString());
 
-//                  // PASSA A LISTA DE FILMES PRO RECYCLERVIEW ATRAVÉS DO ADAPTER
+                        }
+
+                        @Override
+                        public void onFailure(Call<Movie> call, Throwable t) {
+                            mostraAlerta("Erro",t.toString());
+                            // Log error here since request failed
+                            Log.e(TAG, t.toString());
+                        }
+                    });
+                }
+              //Log.println(1,"teste",Integer.toString(movies.size()));
+
+                  // PASSA A LISTA DE FILMES PRO RECYCLERVIEW ATRAVÉS DO ADAPTER
+                //recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
+            }
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                mostraAlerta("Erro",t.toString());
+                // Log error here since request failed
+                Log.e(TAG, t.toString());
+            }
+        });
+
+        Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,"Love & Pop");
+        callDetail.enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                int statusCode = response.code();
+                Log.i("teste",Integer.toString(statusCode));
+                Log.i("url",response.raw().request().url().toString());
+                Movie movie = response.body();
+                Log.i("Objetao",movie.toString());
+
+
+//               Log.println(1,"teste",Integer.toString(movies.size()));
 //                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
-//            }
-//
-//            @Override
-//            public void onFailure(Call<MoviesResponse> call, Throwable t) {
-//                mostraAlerta("Erro",t.toString());
-//                // Log error here since request failed
-//                Log.e(TAG, t.toString());
-//            }
-//        });
-//
-////        Call<Movie> callDetail = apiService.getMovieDetail(API_KEY,"Love & Pop");
-////        callDetail.enqueue(new Callback<Movie>() {
-////            @Override
-////            public void onResponse(Call<Movie> call, Response<Movie> response) {
-////                int statusCode = response.code();
-////                Log.i("teste",Integer.toString(statusCode));
-////                Log.i("url",response.raw().request().url().toString());
-////                Movie movie = response.body();
-////                Log.i("Objetao",movie.toString());
-////
-////
-//////               Log.println(1,"teste",Integer.toString(movies.size()));
-//////                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
-////            }
-////
-////            @Override
-////            public void onFailure(Call<Movie> call, Throwable t) {
-////                mostraAlerta("Erro",t.toString());
-////                // Log error here since request failed
-////                Log.e(TAG, t.toString());
-////            }
-////        });
+            }
+
+            @Override
+            public void onFailure(Call<Movie> call, Throwable t) {
+                mostraAlerta("Erro",t.toString());
+                // Log error here since request failed
+                Log.e(TAG, t.toString());
+            }
+        });
     }
 
 
