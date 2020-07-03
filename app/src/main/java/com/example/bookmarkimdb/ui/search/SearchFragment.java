@@ -36,7 +36,7 @@ import retrofit2.Response;
 
 public class SearchFragment extends Fragment {
 
-    private SearchViewModel searchViewModel;
+
     private RecyclerView recyclerView;
     private List<MovieDTO> searchList;
     private List<MovieDTO> searchListDB;
@@ -53,64 +53,42 @@ public class SearchFragment extends Fragment {
         searchList = new ArrayList<>();
         searchListAPIResponse = new ArrayList<>();
         searchListDB = new ArrayList<>();
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_search, container, false);
 
         final ApiInterface apiService =
                 ApiClient.getClient().create(ApiInterface.class);
 
-//        final TextView textView = root.findViewById(R.id.text_gallery);
-//        searchViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
         bd = new BDSQLite(getContext());
-//        MovieDTO filme1 = new MovieDTO("tt0168972", "89123798123", 42.47872,-22.50076,"casa");
-//        MovieDTO filme2 = new MovieDTO("tt1528785", "66666666", 42.47872,-22.50076,"casa do pedrinho");
-//        bd.addMovies(filme1);
-//        bd.addMovies(filme2);
-        searchListDB.addAll(bd.getAllMovies());
+
+        searchListDB.addAll(bd.getAllMovies()); // grab movies from sqlite db to add on recyclerview AFTER checking them with an API call for each, to grab + info
 
         for(Integer i=0; i<searchListDB.size();i++){
             final MovieDTO movieSaved = searchListDB.get(i);
-            Log.i("t1",movieSaved.getId());
-            Log.i("t1",movieSaved.getPhotoPath());
-            //Log.i("t1",movieSaved.getAddressLat());
-            Log.i("t1",movieSaved.getAddressName());
+
             Call<Movie> callDetail = apiService.getMovieDetailById(API_KEY,movieSaved.getId());
             callDetail.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, Response<Movie> response) {
                     int statusCode = response.code();
-                    Log.i("teste",Integer.toString(statusCode));
-                    Log.i("url",response.raw().request().url().toString());
 
                     Movie movie = response.body();
-                    Log.i("bode",movie.getDirector());
+
                     searchListAPIResponse.add(movie);
                     searchList.add(movieSaved);
-                    Log.i("Objetao1",searchListAPIResponse.get(searchListAPIResponse.size()-1).toString());
-                    Log.i("Objetao2",searchList.get(searchList.size()-1).toString());
+
                     resetAdapterState();
 
-//               Log.println(1,"teste",Integer.toString(movies.size()));
-//                recyclerView.setAdapter(new MoviesAdapter(movies, R.layout.list_item_movie, getApplicationContext()));
                 }
 
                 @Override
                 public void onFailure(Call<Movie> call, Throwable t) {
-//                    mostraAlerta("Erro",t.toString());
-                    // Log error here since request failed
-                    Log.e("HELLO DARLING", t.toString());
+
+                    Log.e("HELLO DARLING I'M AN ERROR BLEEP BLOOP", t.toString());
                 }
             });
         }
-//        for(Movie movieSaved : searchListAPIResponse) {
-//            Log.i("Films", movieSaved.toString());
-//        }
+
         this.setRecyclerView(root);
 
         return root;
@@ -129,10 +107,7 @@ public class SearchFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), layoutManager.getOrientation()));
-//        for(Integer i=0; i<searchListAPIResponse.size();i++) {
-//            Movie movieSaved = searchListAPIResponse.get(i);
-//            Log.i("testa lista", movieSaved.toString());
-//        }
+
         final AdapterSearch adapter = new AdapterSearch(searchList, searchListAPIResponse);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();

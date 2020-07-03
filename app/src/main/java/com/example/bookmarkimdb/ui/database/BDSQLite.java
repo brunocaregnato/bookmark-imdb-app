@@ -61,12 +61,12 @@ public class BDSQLite extends SQLiteOpenHelper {
 
     public MovieDTO getMovie(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_MOVIES, // a. tabela
-                COLUMNS, // b. colunas
-                " id = ?", // c. colunas para comparar
-                new String[] { id }, // d. parâmetros
-                null, // e. group by
-                null, // f. having
+        Cursor cursor = db.query(TABLE_MOVIES, 
+                COLUMNS, 
+                " id = ?", 
+                new String[] { id }, 
+                null, // group by
+                null, // having
                 null, // g. order by
                 null); // h. limit
         if (cursor == null) {
@@ -109,21 +109,21 @@ public class BDSQLite extends SQLiteOpenHelper {
         values.put(ADDRESS_LAT, movie.getAddressLat());
         values.put(ADDRESS_LON, movie.getAddressLon());
 
-        int i = db.update(TABLE_MOVIES, //tabela
-                values, // valores
-                ID + " = ?", // colunas para comparar
-                new String[] { movie.getId() }); //param P COMPARAÇÂO
-        db.close(); // fecha conexao com o banco
-        return i; // número de linhas modificadas
+        int i = db.update(TABLE_MOVIES, 
+                values, 
+                ID + " = ?", 
+                new String[] { movie.getId() });
+        db.close(); 
+        return i; 
     }
 
     public int deleteMovieById(String id) {
-        MovieDTO movie = this.getMovie(id);
+        MovieDTO movie = this.getMovie(id); // Grab the movie, as I'll not have it at first...
         SQLiteDatabase db = this.getWritableDatabase();
         File file = new File(movie.getPhotoPath());
         file.delete();
-        int i = db.delete(TABLE_MOVIES, //tabela
-                ID + " = ?", // colunas para comparar
+        int i = db.delete(TABLE_MOVIES,
+                ID + " = ?",
                 new String[] { movie.getId().trim() });
         db.close();
         return i;

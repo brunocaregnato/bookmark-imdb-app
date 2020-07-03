@@ -2,7 +2,9 @@ package com.example.bookmarkimdb.ui.models;
 
 import com.google.gson.annotations.SerializedName;
 
-
+/**
+ * Class for general searches within OMDB Api
+ */
 public class MovieSearch {
     @SerializedName("Title")
     private String title;

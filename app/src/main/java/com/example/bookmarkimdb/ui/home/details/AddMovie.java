@@ -45,7 +45,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("deprecation") // hehehe we're OUTLAWS here, Androidy!
 public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private String imdbId, title, picturePath;

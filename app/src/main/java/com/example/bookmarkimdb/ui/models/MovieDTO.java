@@ -1,5 +1,9 @@
 package com.example.bookmarkimdb.ui.models;
 
+/**
+ * Class responsible for the DataTransfer of
+ * Movie data from/to the SQLite DB
+ */
 public class MovieDTO {
 
     String id;

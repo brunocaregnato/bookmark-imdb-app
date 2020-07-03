@@ -2,6 +2,11 @@ package com.example.bookmarkimdb.ui.models;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Class responsible for the JSON detail objects
+ * of a movie, returned from a GET request to the
+ *     OMDB Api
+ */
 public class Movie {
     @SerializedName("Title")
     private String title;
@@ -29,8 +34,13 @@ public class Movie {
     private String awards;
     @SerializedName("Poster")
     private String poster;
+
+    //  Returns a JSON list. As we're not
+    //  going to deal with personal ratings,
+    //  we found better to just comment it out :)
     //    @SerializedName("Ratings")
-//    private String ratings;
+    //    private String ratings;
+    
     @SerializedName("Metascore")
     private String metascore;
     @SerializedName("imdbVotes")
@@ -266,16 +276,6 @@ public class Movie {
     public void setWebsite(String website) {
         this.website = website;
     }
-
-
-
-//    public MovieDetail(String title, String year, String imdbID, String type, String poster) {
-//        this.title = title;
-//        this.year = year;
-//        this.imdbID = imdbID;
-//        this.type = type;
-//        this.poster = poster;
-//    }
 
 
 }

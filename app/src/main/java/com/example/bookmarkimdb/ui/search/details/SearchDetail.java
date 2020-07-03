@@ -98,10 +98,6 @@ public class SearchDetail extends Fragment {
             }
         });
 
-
-
-
-
         return view;
     }
 

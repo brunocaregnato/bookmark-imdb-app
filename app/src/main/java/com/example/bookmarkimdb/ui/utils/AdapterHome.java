@@ -42,7 +42,6 @@ public class AdapterHome extends RecyclerView.Adapter<AdapterHome.ViewHolder> {
         return moviesList.size();
     }
 
-    //popular as tags da fragment_home aqui
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView title, plot;

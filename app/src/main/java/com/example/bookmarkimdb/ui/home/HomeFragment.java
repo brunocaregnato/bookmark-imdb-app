@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(adapterHome);
         adapterHome.notifyDataSetChanged();
 
-        //aqui chamar os detalhes
+        //searched movies details
         recyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
                         new RecyclerItemClickListener.OnItemClickListener() {
@@ -169,7 +169,6 @@ public class HomeFragment extends Fragment {
                         });
                     }
 
-//                                resetAdapterState();
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     progressBar.setVisibility(view.GONE);

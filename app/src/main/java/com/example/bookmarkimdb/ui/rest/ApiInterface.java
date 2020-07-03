@@ -7,7 +7,9 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-
+/**
+ * Interface for GET requests on OMDB Api
+ */
 public interface ApiInterface {
 
     // curl -X GET -i 'http://www.omdbapi.com/&apikey=e391ba67?s='
@@ -24,6 +26,4 @@ public interface ApiInterface {
     @GET("/")
     Call<Movie> getMovieDetailById(@Query("apikey") String apiKey, @Query("i") String movieId);
 
-    // @GET("movie/{id}")
-    // Call<MoviesResponse> getMovieDetails(@Path("id") int id, @Query("api_key") String apiKey);
 }

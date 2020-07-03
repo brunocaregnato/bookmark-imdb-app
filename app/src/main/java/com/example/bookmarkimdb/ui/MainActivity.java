@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity  {
         askLocationPermissions();
 
         if (API_KEY.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Please obtain your API KEY from themoviedb.org first!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Please obtain your API KEY on omdbapi.com.", Toast.LENGTH_LONG).show();
             return;
         }
       
