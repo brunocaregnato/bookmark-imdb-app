@@ -48,7 +48,8 @@ public class SearchFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        FragmentTransaction transaction = this.getFragmentManager().beginTransaction();
+        transaction.addToBackStack(null).commit();
         searchList = new ArrayList<>();
         searchListAPIResponse = new ArrayList<>();
         searchListDB = new ArrayList<>();

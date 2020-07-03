@@ -69,7 +69,7 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_add_movie, container, false);
-
+        picturePath = null;
         bd = new BDSQLite(getContext());
 
         if (ContextCompat.checkSelfPermission(getActivity(),
@@ -109,12 +109,18 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
             }
         });
 
+
+
         Button saveButton = view.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View viewButton) {
+                String imagePath = "";
+                if(picturePath!=null){
+                    imagePath = new File(picturePath).getAbsolutePath();
+                }
                 MovieDTO movie =
-                        new MovieDTO(imdbId, new File(picturePath).getAbsolutePath(),
+                        new MovieDTO(imdbId, imagePath,
                         latitude, longitude, String.valueOf(address.getText()));
                 bd.addMovies(movie);
 

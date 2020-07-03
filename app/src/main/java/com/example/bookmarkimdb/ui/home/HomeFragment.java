@@ -67,56 +67,16 @@ public class HomeFragment extends Fragment {
 
         final EditText searchMovie = view.findViewById(R.id.searchMovie);
         FloatingActionButton searchMoviesButton = view.findViewById(R.id.searchMoviesButton);
+        if(searchMovie.getText().toString().trim().length()>0) {
+            searchMovies(view,apiService,searchMovie);
+        }
 
         searchMoviesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View viewButton) {
 
                 if(searchMovie.getText().toString().trim().length()>0) {
-                    moviesList.clear();
-                    progressBar.setVisibility(view.VISIBLE);
-
-                    Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString().trim(), 1);
-                    call.enqueue(new Callback<MoviesResponse>() {
-                        @Override
-                        public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                            List<MovieSearch> movies = response.body().getSearch();
-                            if(movies==null){
-                                Toast.makeText(getContext(), "No movies where found with this title. Please try another one.", Toast.LENGTH_SHORT).show();
-                                progressBar.setVisibility(view.GONE);
-                            }else {
-                                for (MovieSearch movie : movies) {
-                                    Call<Movie> callDetail = apiService.getMovieDetail(API_KEY, movie.getTitle());
-                                    callDetail.enqueue(new Callback<Movie>() {
-                                        @Override
-                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
-                                            Movie movie = response.body();
-                                            moviesList.add(movie);
-                                            resetAdapterState();
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<Movie> call, Throwable t) {
-                                            displayAlert("Error", t.toString());
-                                            Log.e(TAG, t.toString());
-                                        }
-                                    });
-                                }
-
-//                                resetAdapterState();
-                                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                progressBar.setVisibility(view.GONE);
-                            }
-                        }
-
-
-                        @Override
-                        public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                            displayAlert("Error", t.toString());
-                            Log.e(TAG, t.toString());
-                        }
-                    });
+                    searchMovies(view,apiService,searchMovie);
                 }else{
                     Toast.makeText(getContext(), "Please input a movie title for the search.", Toast.LENGTH_SHORT).show();
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -176,5 +136,58 @@ public class HomeFragment extends Fragment {
                     }
                 });
         alertDialog.show();
+    }
+
+    private void searchMovies(final View view, final ApiInterface apiService, EditText searchMovie){
+        moviesList.clear();
+        progressBar.setVisibility(view.VISIBLE);
+
+        Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString().trim(), 1);
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                List<MovieSearch> movies = response.body().getSearch();
+                if(movies==null){
+                    Toast.makeText(getContext(), "No movies where found with this title. Please try another one.", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(view.GONE);
+                }else {
+                    for (MovieSearch movie : movies) {
+                        Call<Movie> callDetail = apiService.getMovieDetail(API_KEY, movie.getTitle());
+                        callDetail.enqueue(new Callback<Movie>() {
+                            @Override
+                            public void onResponse(Call<Movie> call, Response<Movie> response) {
+                                Movie movie = response.body();
+                                moviesList.add(movie);
+                                resetAdapterState();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Movie> call, Throwable t) {
+                                displayAlert("Error", t.toString());
+                                Log.e(TAG, t.toString());
+                            }
+                        });
+                    }
+
+//                                resetAdapterState();
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    progressBar.setVisibility(view.GONE);
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                displayAlert("Error", t.toString());
+                Log.e(TAG, t.toString());
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 }
