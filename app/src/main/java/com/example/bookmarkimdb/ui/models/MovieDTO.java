@@ -8,6 +8,14 @@ public class MovieDTO {
     String addressLat;
     String addressName;
 
+    public MovieDTO(String id, String photoPath, String addressLon, String addressLat, String addressName) {
+        this.id = id;
+        this.photoPath = photoPath;
+        this.addressLon = addressLon;
+        this.addressLat = addressLat;
+        this.addressName = addressName;
+    }
+
     public String getId() {
         return id;
     }

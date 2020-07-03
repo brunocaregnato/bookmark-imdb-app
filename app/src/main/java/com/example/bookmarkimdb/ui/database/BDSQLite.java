@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class BDSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "BOOKMARKDATABASE";
     private static final String TABLE_MOVIES = "MOVIES";
 
@@ -79,12 +79,16 @@ public class BDSQLite extends SQLiteOpenHelper {
     }
 
     private MovieDTO cursorToMovie(Cursor cursor) {
-        MovieDTO movie = new MovieDTO();
-        movie.setId(cursor.getString(0));
-        movie.setPhotoPath(cursor.getString(1));
-        movie.setAddressName(cursor.getString(2));
-        movie.setAddressLat(cursor.getString(3));
-        movie.setAddressLon(cursor.getString(4));
+        MovieDTO movie = new MovieDTO(cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4));
+//        movie.setId(cursor.getString(0));
+//        movie.setPhotoPath(cursor.getString(1));
+//        movie.setAddressName(cursor.getString(2));
+//        movie.setAddressLat(cursor.getString(3));
+//        movie.setAddressLon(cursor.getString(4));
         return movie;
     }
 

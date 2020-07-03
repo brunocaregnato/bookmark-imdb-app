@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.bookmarkimdb.R;
+import com.example.bookmarkimdb.ui.database.BDSQLite;
 import com.example.bookmarkimdb.ui.models.Movie;
 import com.example.bookmarkimdb.ui.models.MovieSearch;
 import com.example.bookmarkimdb.ui.models.MoviesResponse;
@@ -104,10 +105,10 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
                         @Override
                         public void onResponse(Call<Movie> call, Response<Movie> response) {
                             int statusCode = response.code();
-                            Log.i("teste",Integer.toString(statusCode));
-                            Log.i("url",response.raw().request().url().toString());
+//                            Log.i("teste",Integer.toString(statusCode));
+//                            Log.i("url",response.raw().request().url().toString());
                             Movie movie = response.body();
-                            Log.i("Objetao",movie.toString());
+//                            Log.i("Objetao",movie.toString());
 
                         }
 
@@ -138,10 +139,10 @@ public class MainActivity extends AppCompatActivity implements ConnectionCallbac
             @Override
             public void onResponse(Call<Movie> call, Response<Movie> response) {
                 int statusCode = response.code();
-                Log.i("teste",Integer.toString(statusCode));
-                Log.i("url",response.raw().request().url().toString());
+//                Log.i("teste",Integer.toString(statusCode));
+//                Log.i("url",response.raw().request().url().toString());
                 Movie movie = response.body();
-                Log.i("Objetao",movie.toString());
+//                Log.i("Objetao",movie.toString());
 
 
 //               Log.println(1,"teste",Integer.toString(movies.size()));
