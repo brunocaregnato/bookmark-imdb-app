@@ -1,7 +1,10 @@
 package com.example.bookmarkimdb.ui.home.details;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,25 +73,37 @@ public class Details extends Fragment {
                 Movie movie = response.body();
                 titleDetail.setText(movie.getTitle());
                 plotDetail.setText(movie.getPlot());
-                metascore.setText("Metascore: " + movie.getMetascore() + "/100");
-                votes.setText("Votes: " + movie.getImdbVotes());
-                actors.setText("Actors: " + movie.getActors());
-                director.setText("Director(s): " + movie.getDirector());
-                year.setText("Year: " + movie.getYear());
+                metascore.setText(" Metascore: " + movie.getMetascore() + "/100");
+                votes.setText(" Votes: " + movie.getImdbVotes());
+                actors.setText(" Actors: " + movie.getActors());
+                director.setText(" Director(s): " + movie.getDirector());
+                year.setText(" Year: " + movie.getYear());
                 Glide.with(view.getContext()).load(movie.getPoster()).into(posterDetail);
             }
 
             @Override
             public void onFailure(Call<Movie> call, Throwable t) {
-//                mostraAlerta("Erro",t.toString());
-//                // Log error here since request failed
-//                Log.e(TAG, t.toString());
+                displayAlert("Error: ", t.toString());
+                Log.e("Error: ", t.toString());
             }
         });
 
         return view;
     }
 
-
+    private void displayAlert(String title, String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setButton(
+                AlertDialog. BUTTON_NEUTRAL,
+                getString(R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 
 }

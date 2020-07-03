@@ -4,11 +4,11 @@ public class MovieDTO {
 
     String id;
     String photoPath;
-    String addressLon;
-    String addressLat;
+    double addressLon;
+    double addressLat;
     String addressName;
 
-    public MovieDTO(String id, String photoPath, String addressLon, String addressLat, String addressName) {
+    public MovieDTO(String id, String photoPath, double addressLon, double addressLat, String addressName) {
         this.id = id;
         this.photoPath = photoPath;
         this.addressLon = addressLon;
@@ -32,19 +32,19 @@ public class MovieDTO {
         this.photoPath = photoPath;
     }
 
-    public String getAddressLon() {
+    public double getAddressLon() {
         return addressLon;
     }
 
-    public void setAddressLon(String addressLon) {
+    public void setAddressLon(double addressLon) {
         this.addressLon = addressLon;
     }
 
-    public String getAddressLat() {
+    public double getAddressLat() {
         return addressLat;
     }
 
-    public void setAddressLat(String addressLat) {
+    public void setAddressLat(double addressLat) {
         this.addressLat = addressLat;
     }
 

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class BDSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "BOOKMARKDATABASE";
     private static final String TABLE_MOVIES = "MOVIES";
 
@@ -23,7 +23,7 @@ public class BDSQLite extends SQLiteOpenHelper {
     private static final String ADDRESS_LAT = "address_lat";
     private static final String ADDRESS_LON = "address_lon";
 
-    private static final String[] COLUMNS = {ID, PHOTO_PATH, ADDRESS_NAME, ADDRESS_LAT, ADDRESS_LON };
+    private static final String[] COLUMNS = {ID, PHOTO_PATH, ADDRESS_LAT, ADDRESS_LON, ADDRESS_NAME };
 
     public BDSQLite(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,8 +35,8 @@ public class BDSQLite extends SQLiteOpenHelper {
                 ID + " STRING," +
                 PHOTO_PATH + " TEXT," +
                 ADDRESS_NAME + " TEXT," +
-                ADDRESS_LAT + " TEXT," +
-                ADDRESS_LON + " TEXT)";
+                ADDRESS_LAT + " DOUBLE," +
+                ADDRESS_LON + " DOUBLE)";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -81,14 +81,9 @@ public class BDSQLite extends SQLiteOpenHelper {
     private MovieDTO cursorToMovie(Cursor cursor) {
         MovieDTO movie = new MovieDTO(cursor.getString(0),
                 cursor.getString(1),
-                cursor.getString(2),
-                cursor.getString(3),
+                cursor.getDouble(2),
+                cursor.getDouble(3),
                 cursor.getString(4));
-//        movie.setId(cursor.getString(0));
-//        movie.setPhotoPath(cursor.getString(1));
-//        movie.setAddressName(cursor.getString(2));
-//        movie.setAddressLat(cursor.getString(3));
-//        movie.setAddressLon(cursor.getString(4));
         return movie;
     }
 

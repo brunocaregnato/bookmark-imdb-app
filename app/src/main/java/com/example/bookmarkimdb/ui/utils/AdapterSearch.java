@@ -36,7 +36,6 @@ public class AdapterSearch extends RecyclerView.Adapter<AdapterSearch.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
         viewHolder.setData(watchedList.get(position), watchedListResponse.get(position));
-//        viewHolder.setData(watchedList.get(position));
     }
 
     @Override
@@ -44,33 +43,26 @@ public class AdapterSearch extends RecyclerView.Adapter<AdapterSearch.ViewHolder
         return watchedList.size();
     }
 
-    //popular as tags da fragment_search aqui
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private TextView title, plot, addressName;
+        private TextView title, plot, metascore;
         private ImageView poster;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            title = itemView.findViewById(R.id.title);
-            poster = itemView.findViewById(R.id.poster);
-            plot = itemView.findViewById(R.id.plot);
-            addressName = itemView.findViewById(R.id.addressName);
+            title = itemView.findViewById(R.id.titleSearch);
+            poster = itemView.findViewById(R.id.posterSearch);
+            plot = itemView.findViewById(R.id.plotSearch);
+            metascore = itemView.findViewById(R.id.metascoreSearch);
         }
 
         private void setData(MovieDTO movieDTO, Movie movieDetail) {
-//private void setData(MovieDTO movieDTO) {
             title.setText(movieDetail.getTitle());
-    addressName.setText(movieDTO.getAddressName());
             plot.setText(movieDetail.getPlot());
+            metascore.setText("Metascore: " + movieDetail.getMetascore() + "/100");
             Glide.with(itemView.getContext()).load(movieDetail.getPoster()).into(poster);
         }
-
-//        poster
-//        title
-//        plot
-//        addressName
 
         @Override
         public void onClick(View v) {
