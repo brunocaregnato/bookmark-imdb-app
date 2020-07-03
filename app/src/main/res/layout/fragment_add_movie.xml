@@ -76,7 +76,6 @@
         android:layout_marginTop="30dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:onClick="saveButton"
         android:text="Save" />
 
 </LinearLayout>

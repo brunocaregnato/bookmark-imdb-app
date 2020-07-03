@@ -16,13 +16,14 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -30,6 +31,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.bookmarkimdb.R;
+import com.example.bookmarkimdb.ui.database.BDSQLite;
+import com.example.bookmarkimdb.ui.home.HomeFragment;
+import com.example.bookmarkimdb.ui.models.MovieDTO;
+import com.example.bookmarkimdb.ui.search.SearchFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -40,10 +45,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings("deprecation")
 public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private String imdbId, title;
+    private String imdbId, title, picturePath;
     private TextView titleAdd, actualLocation;
+    private EditText address;
     private ImageView image;
     private GoogleApiClient googleApiClient;
 
@@ -53,13 +60,17 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
     private final int PERMISSION_REQUEST = 2;
     private final int RESULT_OK = -1;
 
-    public AddMovie(String imdbId, String title) {
+    private BDSQLite bd;
+
+    public AddMovie(String imdbId, String title){
         this.imdbId = imdbId;
         this.title = title;
     }
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_add_movie, container, false);
+
+        bd = new BDSQLite(getContext());
 
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -83,6 +94,7 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
         googleApiClient.connect();
 
         image = view.findViewById(R.id.image);
+        address = view.findViewById(R.id.address);
 
         titleAdd = view.findViewById(R.id.titleAdd);
         titleAdd.setText("Add " + title);
@@ -94,6 +106,20 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent, GALLERY);
+            }
+        });
+
+        Button saveButton = view.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View viewButton) {
+                MovieDTO movie =
+                        new MovieDTO(imdbId, new File(picturePath).getAbsolutePath(),
+                        latitude, longitude, String.valueOf(address.getText()));
+                bd.addMovies(movie);
+
+                Toast.makeText(getActivity().getApplicationContext(), "Title registered successfully!", Toast.LENGTH_LONG).show();
+                getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, new SearchFragment()).commit();
             }
         });
 
@@ -110,15 +136,14 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
                     null, null);
             c.moveToFirst();
             int columnIndex = c.getColumnIndex(filePath[0]);
-            String picturePath = c.getString(columnIndex);
+            picturePath = c.getString(columnIndex);
             c.close();
             showPicture(new File(picturePath).getAbsolutePath());
         }
     }
 
-    private void showPicture(String path) {
-        Bitmap bitmap =
-                BitmapFactory.decodeFile(path);
+    private void showPicture(String path){
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
         image.setImageBitmap(bitmap);
     }
 

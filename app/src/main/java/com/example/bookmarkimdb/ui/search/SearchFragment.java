@@ -22,7 +22,9 @@ import com.example.bookmarkimdb.ui.models.Movie;
 import com.example.bookmarkimdb.ui.models.MovieDTO;
 import com.example.bookmarkimdb.ui.rest.ApiClient;
 import com.example.bookmarkimdb.ui.rest.ApiInterface;
+import com.example.bookmarkimdb.ui.search.details.SearchDetail;
 import com.example.bookmarkimdb.ui.utils.AdapterSearch;
+import com.example.bookmarkimdb.ui.utils.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,6 @@ public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<MovieDTO> searchList;
     private List<MovieDTO> searchListDB;
-
 
     private List<Movie> searchListAPIResponse;
     private final static String API_KEY = "e391ba67";
@@ -75,7 +76,7 @@ public class SearchFragment extends Fragment {
             final MovieDTO movieSaved = searchListDB.get(i);
             Log.i("t1",movieSaved.getId());
             Log.i("t1",movieSaved.getPhotoPath());
-            Log.i("t1",movieSaved.getAddressLat());
+            //Log.i("t1",movieSaved.getAddressLat());
             Log.i("t1",movieSaved.getAddressName());
             Call<Movie> callDetail = apiService.getMovieDetailById(API_KEY,movieSaved.getId());
             callDetail.enqueue(new Callback<Movie>() {
@@ -134,12 +135,15 @@ public class SearchFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        //aqui chamar os detalhes
-//        recyclerView.addOnItemTouchListener(
-//                new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
-//                        (view1, position) ->
-//                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                                new Details(historyList.get(position).getId())).commit())
-//        );
+        recyclerView.addOnItemTouchListener(
+            new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
+                    new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view1, int position) {
+                            SearchFragment.this.getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
+                                    new SearchDetail(searchListDB.get(position).getId())).commit();
+                        }
+                    })
+        );
     }
 }
