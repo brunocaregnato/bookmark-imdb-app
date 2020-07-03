@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -70,43 +71,57 @@ public class HomeFragment extends Fragment {
         searchMoviesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View viewButton) {
-                moviesList.clear();
-                progressBar.setVisibility(view.VISIBLE);
 
-                Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString(), 1);
-                call.enqueue(new Callback<MoviesResponse>() {
-                    @Override
-                    public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                        List<MovieSearch> movies = response.body().getSearch();
-                        for (MovieSearch movie : movies) {
-                            Call<Movie> callDetail = apiService.getMovieDetail(API_KEY, movie.getTitle());
-                            callDetail.enqueue(new Callback<Movie>() {
-                                @Override
-                                public void onResponse(Call<Movie> call, Response<Movie> response) {
-                                    Movie movie = response.body();
-                                    moviesList.add(movie);
+                if(searchMovie.getText().toString().trim().length()>0) {
+                    moviesList.clear();
+                    progressBar.setVisibility(view.VISIBLE);
+
+                    Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString().trim(), 1);
+                    call.enqueue(new Callback<MoviesResponse>() {
+                        @Override
+                        public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                            List<MovieSearch> movies = response.body().getSearch();
+                            if(movies==null){
+                                Toast.makeText(getContext(), "No movies where found with this title. Please try another one.", Toast.LENGTH_SHORT).show();
+                                progressBar.setVisibility(view.GONE);
+                            }else {
+                                for (MovieSearch movie : movies) {
+                                    Call<Movie> callDetail = apiService.getMovieDetail(API_KEY, movie.getTitle());
+                                    callDetail.enqueue(new Callback<Movie>() {
+                                        @Override
+                                        public void onResponse(Call<Movie> call, Response<Movie> response) {
+                                            Movie movie = response.body();
+                                            moviesList.add(movie);
+                                            resetAdapterState();
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<Movie> call, Throwable t) {
+                                            displayAlert("Error", t.toString());
+                                            Log.e(TAG, t.toString());
+                                        }
+                                    });
                                 }
 
-                                @Override
-                                public void onFailure(Call<Movie> call, Throwable t) {
-                                    displayAlert("Error", t.toString());
-                                    Log.e(TAG, t.toString());
-                                }
-                            });
+//                                resetAdapterState();
+                                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                progressBar.setVisibility(view.GONE);
+                            }
                         }
 
-                        resetAdapterState();
-                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        progressBar.setVisibility(view.GONE);
-                    }
 
-                    @Override
-                    public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                        displayAlert("Error", t.toString());
-                        Log.e(TAG, t.toString());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                            displayAlert("Error", t.toString());
+                            Log.e(TAG, t.toString());
+                        }
+                    });
+                }else{
+                    Toast.makeText(getContext(), "Please input a movie title for the search.", Toast.LENGTH_SHORT).show();
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         });
 
@@ -132,8 +147,11 @@ public class HomeFragment extends Fragment {
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view1, int position) {
-                                HomeFragment.this.getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
-                                        new Details(moviesList.get(position).getImdbID(), API_KEY)).commitAllowingStateLoss();
+                                FragmentTransaction transaction = HomeFragment.this.getFragmentManager().beginTransaction();
+                                transaction.replace(R.id.nav_host_fragment,
+                                        new Details(moviesList.get(position).getImdbID(), API_KEY));
+                                transaction.addToBackStack(null);
+                                transaction.commitAllowingStateLoss();
                             }
                         })
         );
