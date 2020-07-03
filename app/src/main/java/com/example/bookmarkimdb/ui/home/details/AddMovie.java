@@ -2,6 +2,7 @@ package com.example.bookmarkimdb.ui.home.details;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -75,8 +77,7 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            }
-            else {
+            } else {
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
             }
@@ -149,31 +150,55 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
     @SuppressLint("SetTextI18n")
     @Override
     public void onConnected(Bundle bundle) {
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        latitude = lastLocation.getLatitude();
-        longitude = lastLocation.getLongitude();
-        try{
-            Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
-            List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
-            if (addresses.isEmpty()) {
-                onStop();
-            }
-            else {
-                if (addresses.size() > 0) {
-                    Address local = addresses.get(0);
-                    actualLocation.setText("Actual Location: "
-                            + local.getCountryName()
-                            + ", " + local.getAdminArea()
-                            + ", " + local.getSubAdminArea()
-                            + ", " + local.getSubLocality()
-                            + ", " + local.getSubThoroughfare());
-                    onStop();
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+//                Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                try {
+                    Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
+                    List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
+                    if (addresses.isEmpty()) {
+                        onStop();
+                    } else {
+                        if (addresses.size() > 0) {
+                            Address local = addresses.get(0);
+                            actualLocation.setText("Actual Location: "
+                                    + local.getCountryName()
+                                    + ", " + local.getAdminArea()
+                                    + ", " + local.getSubAdminArea()
+                                    + ", " + local.getSubLocality()
+                                    + ", " + local.getSubThoroughfare());
+                            onStop();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        });
+
     }
 
     @Override
@@ -222,4 +247,6 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
     public void onMapReady(GoogleMap googleMap) {
 
     }
+
+
 }
