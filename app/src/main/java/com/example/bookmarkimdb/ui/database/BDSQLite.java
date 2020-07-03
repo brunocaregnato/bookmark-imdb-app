@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class BDSQLite extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "BOOKMARKDATABASE";
     private static final String TABLE_MOVIES = "MOVIES";
 
@@ -117,7 +117,8 @@ public class BDSQLite extends SQLiteOpenHelper {
         return i; // número de linhas modificadas
     }
 
-    public int deleteMovie(MovieDTO movie) {
+    public int deleteMovieById(String id) {
+        MovieDTO movie = this.getMovie(id);
         SQLiteDatabase db = this.getWritableDatabase();
         File file = new File(movie.getPhotoPath());
         file.delete();

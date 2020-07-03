@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -66,8 +67,8 @@ public class SearchFragment extends Fragment {
 //            }
 //        });
         bd = new BDSQLite(getContext());
-//        MovieDTO filme1 = new MovieDTO("tt0168972", "89123798123", "12309","12309","casa");
-//        MovieDTO filme2 = new MovieDTO("tt1528785", "66666666", "66666666","66666666","casa");
+//        MovieDTO filme1 = new MovieDTO("tt0168972", "89123798123", 42.47872,-22.50076,"casa");
+//        MovieDTO filme2 = new MovieDTO("tt1528785", "66666666", 42.47872,-22.50076,"casa do pedrinho");
 //        bd.addMovies(filme1);
 //        bd.addMovies(filme2);
         searchListDB.addAll(bd.getAllMovies());
@@ -140,8 +141,11 @@ public class SearchFragment extends Fragment {
                     new RecyclerItemClickListener.OnItemClickListener() {
                         @Override
                         public void onItemClick(View view1, int position) {
-                            SearchFragment.this.getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
-                                    new SearchDetail(searchListDB.get(position).getId())).commit();
+                            FragmentTransaction transaction = SearchFragment.this.getFragmentManager().beginTransaction();
+                            transaction.replace(R.id.nav_host_fragment,
+                                    new SearchDetail(searchListDB.get(position).getId()));
+                            transaction.addToBackStack(null);
+                            transaction.commit();
                         }
                     })
         );
