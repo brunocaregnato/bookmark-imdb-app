@@ -25,12 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookmarkimdb.R;
 import com.example.bookmarkimdb.ui.MainActivity;
+import com.example.bookmarkimdb.ui.home.details.Details;
 import com.example.bookmarkimdb.ui.models.Movie;
 import com.example.bookmarkimdb.ui.models.MovieSearch;
 import com.example.bookmarkimdb.ui.models.MoviesResponse;
 import com.example.bookmarkimdb.ui.rest.ApiClient;
 import com.example.bookmarkimdb.ui.rest.ApiInterface;
 import com.example.bookmarkimdb.ui.utils.AdapterHome;
+import com.example.bookmarkimdb.ui.utils.RecyclerItemClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -60,9 +62,6 @@ public class HomeFragment extends Fragment {
 
         moviesList = new ArrayList<>();
         progressBar = view.findViewById(R.id.progress_spinner);
-        recyclerView = view.findViewById(R.id.homeFragment);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         setRecyclerView(view);
 
         final EditText searchMovie = view.findViewById(R.id.searchMovie);
@@ -115,6 +114,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void setRecyclerView(View view){
+        recyclerView = view.findViewById(R.id.homeFragment);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -125,12 +127,17 @@ public class HomeFragment extends Fragment {
         adapterHome.notifyDataSetChanged();
 
         //aqui chamar os detalhes
-//        recyclerView.addOnItemTouchListener(
-//                new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
-//                        (view1, position) ->
-//                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                                new Details(historyList.get(position).getId())).commit())
-//        );
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view1, int position) {
+                                HomeFragment.this.getFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
+                                        new Details(moviesList.get(position).getImdbID(), API_KEY)).commitAllowingStateLoss();
+                            }
+                        })
+        );
+
     }
 
     private void resetAdapterState(){
