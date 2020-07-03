@@ -155,49 +155,32 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-//                Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                try {
-                    Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
-                    List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
-                    if (addresses.isEmpty()) {
-                        onStop();
-                    } else {
-                        if (addresses.size() > 0) {
-                            Address local = addresses.get(0);
-                            actualLocation.setText("Actual Location: "
-                                    + local.getCountryName()
-                                    + ", " + local.getAdminArea()
-                                    + ", " + local.getSubAdminArea()
-                                    + ", " + local.getSubLocality()
-                                    + ", " + local.getSubThoroughfare());
-                            onStop();
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        if(lastLocation==null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    setLocation(location);
                 }
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
 
-            }
+                }
 
-            @Override
-            public void onProviderEnabled(String provider) {
+                @Override
+                public void onProviderEnabled(String provider) {
 
-            }
+                }
 
-            @Override
-            public void onProviderDisabled(String provider) {
+                @Override
+                public void onProviderDisabled(String provider) {
 
-            }
-        });
+                }
+            });
+        }else{
+            setLocation(lastLocation);
+        }
 
     }
 
@@ -215,6 +198,31 @@ public class AddMovie extends Fragment implements OnMapReadyCallback, GoogleApiC
     public void stopConnection() {
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
+        }
+    }
+
+    public void setLocation(Location location){
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        try {
+            Geocoder geo = new Geocoder(getContext(), Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
+            if (addresses.isEmpty()) {
+                onStop();
+            } else {
+                if (addresses.size() > 0) {
+                    Address local = addresses.get(0);
+                    actualLocation.setText("Actual Location: "
+                            + local.getCountryName()
+                            + ", " + local.getAdminArea()
+                            + ", " + local.getSubAdminArea()
+                            + ", " + local.getSubLocality()
+                            + ", " + local.getSubThoroughfare());
+                    onStop();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
