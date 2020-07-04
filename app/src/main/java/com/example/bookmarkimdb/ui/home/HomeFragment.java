@@ -149,6 +149,7 @@ public class HomeFragment extends Fragment {
                 List<MovieSearch> movies = response.body().getSearch();
                 if(movies==null){
                     Toast.makeText(getContext(), "No movies where found with this title. Please try another one.", Toast.LENGTH_SHORT).show();
+                    resetAdapterState();
                     progressBar.setVisibility(view.GONE);
                 }else {
                     for (MovieSearch movie : movies) {
