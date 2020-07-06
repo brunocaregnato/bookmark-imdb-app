@@ -48,4 +48,21 @@
             android:layout_height="match_parent">
         </androidx.recyclerview.widget.RecyclerView>
     </FrameLayout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.MainActivity">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/searchMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="20dp"
+            android:background="?attr/colorPrimary"
+            android:tint="#FFFFFFFF"
+            app:srcCompat="@android:drawable/arrow_down_float" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

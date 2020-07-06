@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,8 +54,9 @@ public class HomeFragment extends Fragment {
     private List<Movie> moviesList;
     private String TAG = "DEBUG: ";
     private ProgressBar progressBar;
-
+    private FloatingActionButton searchMoreButton;
     private final static String API_KEY = "e391ba67";
+    private Integer pageNumber = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -62,22 +64,46 @@ public class HomeFragment extends Fragment {
         final ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
 
         moviesList = new ArrayList<>();
+        searchMoreButton = view.findViewById(R.id.searchMore);
+        searchMoreButton.setVisibility(View.GONE);
         progressBar = view.findViewById(R.id.progress_spinner);
         setRecyclerView(view);
 
         final EditText searchMovie = view.findViewById(R.id.searchMovie);
         FloatingActionButton searchMoviesButton = view.findViewById(R.id.searchMoviesButton);
-        if(searchMovie.getText().toString().trim().length()>0) {
-            searchMovies(view,apiService,searchMovie);
+        if (searchMovie.getText().toString().trim().length() > 0) {
+            pageNumber = 1;
+            searchMovies(view, apiService, searchMovie, pageNumber);
         }
 
         searchMoviesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View viewButton) {
 
-                if(searchMovie.getText().toString().trim().length()>0) {
-                    searchMovies(view,apiService,searchMovie);
-                }else{
+                if (searchMovie.getText().toString().trim().length() > 0) {
+                    pageNumber = 1;
+                    moviesList.clear();
+                    searchMoreButton.setVisibility(View.GONE);
+                    searchMovies(view, apiService, searchMovie, pageNumber);
+                } else {
+                    searchMoreButton.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Please input a movie title for the search.", Toast.LENGTH_SHORT).show();
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        });
+
+        searchMoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View viewButton) {
+
+                if (searchMovie.getText().toString().trim().length() > 0) {
+                    pageNumber += 1;
+                    searchMovies(view, apiService, searchMovie, pageNumber);
+                    if((moviesList.size()%10)>pageNumber)
+                        searchMoreButton.setVisibility(view.VISIBLE);
+                } else {
                     Toast.makeText(getContext(), "Please input a movie title for the search.", Toast.LENGTH_SHORT).show();
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -88,7 +114,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void setRecyclerView(View view){
+    private void setRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.homeFragment);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -103,7 +129,7 @@ public class HomeFragment extends Fragment {
 
         //searched movies details
         recyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView ,
+                new RecyclerItemClickListener(getContext().getApplicationContext(), recyclerView,
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
                             public void onItemClick(View view1, int position) {
@@ -118,7 +144,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void resetAdapterState(){
+    private void resetAdapterState() {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         recyclerView.setAdapter(adapter);
     }
@@ -128,7 +154,7 @@ public class HomeFragment extends Fragment {
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
         alertDialog.setButton(
-                AlertDialog. BUTTON_NEUTRAL,
+                AlertDialog.BUTTON_NEUTRAL,
                 getString(R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -138,20 +164,20 @@ public class HomeFragment extends Fragment {
         alertDialog.show();
     }
 
-    private void searchMovies(final View view, final ApiInterface apiService, EditText searchMovie){
-        moviesList.clear();
+    private void searchMovies(final View view, final ApiInterface apiService, EditText searchMovie, final Integer pageNumber) {
+
         progressBar.setVisibility(view.VISIBLE);
 
-        Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString().trim(), 1);
+        Call<MoviesResponse> call = apiService.getMovies(API_KEY, searchMovie.getText().toString().trim(), pageNumber);
         call.enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 List<MovieSearch> movies = response.body().getSearch();
-                if(movies==null){
+                if (movies == null) {
                     Toast.makeText(getContext(), "No movies where found with this title. Please try another one.", Toast.LENGTH_SHORT).show();
                     resetAdapterState();
                     progressBar.setVisibility(view.GONE);
-                }else {
+                } else {
                     for (MovieSearch movie : movies) {
                         Call<Movie> callDetail = apiService.getMovieDetail(API_KEY, movie.getTitle());
                         callDetail.enqueue(new Callback<Movie>() {
@@ -160,6 +186,8 @@ public class HomeFragment extends Fragment {
                                 Movie movie = response.body();
                                 moviesList.add(movie);
                                 resetAdapterState();
+                                if((moviesList.size()%10)>pageNumber)
+                                    searchMoreButton.setVisibility(View.VISIBLE);
                             }
 
                             @Override
